@@ -6,28 +6,31 @@ chrome.runtime.onInstalled.addListener(function() {
     contexts: ["page"]
   });
 
-  // Twitter
-  chrome.contextMenus.create({
-    id: "shareTwitter",
-    parentId: "sharePage",
-    title: "Share on Twitter",
-    contexts: ["page"]
-  });
+  // Define the targets as an array of objects
+  const targets = [
+    {
+      id: "shareTwitter",
+      parentId: "sharePage",
+      title: "Share on Twitter",
+      contexts: ["page"]
+    },
+    {
+      id: "shareFacebook",
+      parentId: "sharePage",
+      title: "Share on Facebook",
+      contexts: ["page"]
+    },
+    {
+      id: "shareReddit",
+      parentId: "sharePage",
+      title: "Share on Reddit",
+      contexts: ["page"]
+    }
+  ];
 
-  // Facebook
-  chrome.contextMenus.create({
-    id: "shareFacebook",
-    parentId: "sharePage",
-    title: "Share on Facebook",
-    contexts: ["page"]
-  });
-
-  // Reddit
-  chrome.contextMenus.create({
-    id: "shareReddit",
-    parentId: "sharePage",
-    title: "Share on Reddit",
-    contexts: ["page"]
+  // Create context menus using the targets array
+  targets.forEach(target => {
+    chrome.contextMenus.create(target);
   });
 
   // Copy text

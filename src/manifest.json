@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Share",
+  "name": "Share Feed",
   "version": "1.0",
-  "permissions": ["activeTab", "scripting", "contextMenus"],
+  "permissions": ["activeTab", "scripting", "contextMenus", "clipboardWrite"],
   "background": {
     "service_worker": "background.js"
   },

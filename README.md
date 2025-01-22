@@ -48,6 +48,34 @@ After installation, the Xrs Share extension is simple to use:
 
 6. If you choose to copy the sharing text, the page title and URL will be copied to your clipboard, and you will receive an alert confirming the action.
 
+## Popup Page
+
+The popup page provides quick access to sharing options directly from the extension's icon in the Chrome toolbar. It includes buttons for each supported platform and a button to copy the page details to the clipboard.
+
+To open the preferences page from the popup, click the gear icon (⚙️) in the popup header.
+
+## Preferences Page
+
+The preferences page allows users to manage custom share targets. Users can add, edit, and delete custom targets with specific titles, templates, button colors, and text colors. These custom targets will appear in the context menu and popup page for easy access.
+
+## Code Files
+
+### `background.js`
+
+This file handles the creation of context menu items for sharing the current page on various social media platforms. It also manages the execution of scripts to retrieve page details and open the appropriate sharing URLs.
+
+### `popup.js`
+
+This file adds event listeners to the sharing buttons in the popup page. It retrieves the current page details and opens the sharing URLs or copies the page details to the clipboard.
+
+### `popup.html`
+
+This file defines the structure and styling of the popup page, including the sharing buttons and the preferences button.
+
+### `preferences.html`
+
+This file defines the structure and styling of the preferences page, where users can add, edit, and delete custom share targets.
+
 ## Contributing
 
 Contributions to the Xrs Share extension are welcome. Please feel free to fork the repository, make changes, and submit pull requests. You can also open issues if you find bugs or have feature requests.

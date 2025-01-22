@@ -89,3 +89,34 @@ function getPageDetails(menuItemId) {
     window.open(shareUrl, '_blank');
   }
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    const openPreferencesButton = document.getElementById('openPreferences');
+    openPreferencesButton.addEventListener('click', () => {
+        console.log('Opening preferences page');
+        chrome.tabs.create({ url: 'src/preferences.html' });
+    });
+
+    function loadCustomTargets() {
+        console.log('Loading custom targets');
+        chrome.storage.local.get({ customTargets: [] }, (result) => {
+            const customTargets = result.customTargets;
+            console.log('Custom targets:', customTargets);
+            const container = document.getElementById('customTargetsContainer');
+            customTargets.forEach(target => {
+                const button = document.createElement('button');
+                button.textContent = target.title;
+                button.style.backgroundColor = target.buttonColor;
+                button.style.color = target.textColor;
+                button.addEventListener('click', () => {
+                    const url = target.template.replace('{url}', encodeURIComponent(window.location.href))
+                                              .replace('{text}', encodeURIComponent(document.title));
+                    window.open(url, '_blank');
+                });
+                container.appendChild(button);
+            });
+        });
+    }
+
+    loadCustomTargets();
+});

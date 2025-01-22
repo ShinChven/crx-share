@@ -1,9 +1,14 @@
-
 {
   "manifest_version": 3,
   "name": "Xrs Share",
   "version": "1.1",
-  "permissions": ["activeTab", "scripting", "contextMenus", "clipboardWrite"],
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting",
+    "contextMenus",
+    "clipboardWrite"
+  ],
   "background": {
     "service_worker": "src/background.js"
   },
@@ -15,5 +20,6 @@
   ],
   "action": {
     "default_popup": "src/popup.html"
-  }
+  },
+  "options_page": "src/preferences.html"
 }

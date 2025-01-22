@@ -1,4 +1,22 @@
 chrome.runtime.onInstalled.addListener(function() {
+  createContextMenu();
+  loadCustomTargets();
+  loadOpenWithTargets();
+});
+
+// Listen for storage changes to update context menus dynamically
+chrome.storage.onChanged.addListener((changes, area) => {
+  if (area === 'local') {
+    if (changes.customTargets) {
+      updateCustomTargets(changes.customTargets.newValue);
+    }
+    if (changes.openWithTargets) {
+      updateOpenWithTargets(changes.openWithTargets.newValue);
+    }
+  }
+});
+
+function createContextMenu() {
   // Create a parent item
   chrome.contextMenus.create({
     id: "sharePage",
@@ -71,25 +89,12 @@ chrome.runtime.onInstalled.addListener(function() {
     contexts: ["page"]
   });
 
-  // Load custom targets from storage
-  chrome.storage.local.get({ customTargets: [] }, (result) => {
-    const customTargets = result.customTargets;
-    customTargets.forEach(target => {
-      chrome.contextMenus.create({
-        id: `customTarget-${target.id}`,
-        parentId: "sharePage",
-        title: target.title,
-        contexts: ["page"]
-      });
-    });
-
-    // Add "Preferences" option to "Share This Page" menu at the bottom
-    chrome.contextMenus.create({
-      id: "sharePreferences",
-      parentId: "sharePage",
-      title: "Preferences",
-      contexts: ["page"]
-    });
+  // Add "Preferences" option to "Share This Page" menu at the bottom
+  chrome.contextMenus.create({
+    id: "sharePreferences",
+    parentId: "sharePage",
+    title: "Preferences",
+    contexts: ["page"]
   });
 
   // Create a parent item for "Open Selected Text With"
@@ -126,7 +131,30 @@ chrome.runtime.onInstalled.addListener(function() {
     chrome.contextMenus.create(target);
   });
 
-  // Load custom "Open With" targets from storage
+  // Add "Preferences" option to "Open Selected Text With" menu at the bottom
+  chrome.contextMenus.create({
+    id: "openWithPreferences",
+    parentId: "openSelectedTextWith",
+    title: "Preferences",
+    contexts: ["selection"]
+  });
+}
+
+function loadCustomTargets() {
+  chrome.storage.local.get({ customTargets: [] }, (result) => {
+    const customTargets = result.customTargets;
+    customTargets.forEach(target => {
+      chrome.contextMenus.create({
+        id: `customTarget-${target.id}`,
+        parentId: "sharePage",
+        title: target.title,
+        contexts: ["page"]
+      });
+    });
+  });
+}
+
+function loadOpenWithTargets() {
   chrome.storage.local.get({ openWithTargets: [] }, (result) => {
     const openWithTargets = result.openWithTargets;
     openWithTargets.forEach(target => {
@@ -137,16 +165,36 @@ chrome.runtime.onInstalled.addListener(function() {
         contexts: ["selection"]
       });
     });
+  });
+}
 
-    // Add "Preferences" option to "Open Selected Text With" menu at the bottom
-    chrome.contextMenus.create({
-      id: "openWithPreferences",
-      parentId: "openSelectedTextWith",
-      title: "Preferences",
-      contexts: ["selection"]
+function updateCustomTargets(customTargets) {
+  chrome.contextMenus.removeAll(() => {
+    createContextMenu();
+    customTargets.forEach(target => {
+      chrome.contextMenus.create({
+        id: `customTarget-${target.id}`,
+        parentId: "sharePage",
+        title: target.title,
+        contexts: ["page"]
+      });
     });
   });
-});
+}
+
+function updateOpenWithTargets(openWithTargets) {
+  chrome.contextMenus.removeAll(() => {
+    createContextMenu();
+    openWithTargets.forEach(target => {
+      chrome.contextMenus.create({
+        id: `openWithTarget-${target.id}`,
+        parentId: "openSelectedTextWith",
+        title: target.title,
+        contexts: ["selection"]
+      });
+    });
+  });
+}
 
 chrome.contextMenus.onClicked.addListener((info, tab) => {
   if (info.menuItemId === "sharePreferences" || info.menuItemId === "openWithPreferences") {

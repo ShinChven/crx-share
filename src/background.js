@@ -9,49 +9,49 @@ chrome.runtime.onInstalled.addListener(function() {
   // Define the targets as an array of objects
   const targets = [
     {
-      id: "twitter",
+      id: "shareTwitter",
       parentId: "sharePage",
       title: "𝕏 (formerly Twitter)",
       contexts: ["page"]
     },
     {
-      id: "facebook",
+      id: "shareFacebook",
       parentId: "sharePage",
       title: "Facebook",
       contexts: ["page"]
     },
     {
-      id: "reddit",
+      id: "shareReddit",
       parentId: "sharePage",
       title: "Reddit",
       contexts: ["page"]
     },
     {
-      id: "linkedin",
+      id: "shareLinkedin",
       parentId: "sharePage",
       title: "LinkedIn",
       contexts: ["page"]
     },
     {
-      id: "pinterest",
+      id: "sharePinterest",
       parentId: "sharePage",
       title: "Pinterest",
       contexts: ["page"]
     },
     {
-      id: "tumblr",
+      id: "shareTumblr",
       parentId: "sharePage",
       title: "Tumblr",
       contexts: ["page"]
     },
     {
-      id: "truthSocial",
+      id: "shareTruthSocial",
       parentId: "sharePage",
       title: "Truth Social",
       contexts: ["page"]
     },
     {
-      id: "weibo",
+      id: "shareWeibo",
       parentId: "sharePage",
       title: "Weibo",
       contexts: ["page"]
@@ -111,28 +111,28 @@ function getPageDetails(menuItemId) {
   let shareUrl = '';
 
   switch (menuItemId) {
-    case 'twitter':
+    case 'shareTwitter':
       shareUrl = `https://x.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(pageUrl)}`;
       break;
-    case 'facebook':
+    case 'shareFacebook':
       shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(pageUrl)}`;
       break;
-    case 'reddit':
+    case 'shareReddit':
       shareUrl = `https://www.reddit.com/submit?url=${encodeURIComponent(pageUrl)}&title=${encodeURIComponent(text)}`;
       break;
-    case 'linkedin':
+    case 'shareLinkedin':
       shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(pageUrl)}`;
       break;
-    case 'pinterest':
+    case 'sharePinterest':
       shareUrl = `https://pinterest.com/pin/create/button/?url=${encodeURIComponent(pageUrl)}&description=${encodeURIComponent(text)}`;
       break;
-    case 'tumblr':
+    case 'shareTumblr':
       shareUrl = `https://www.tumblr.com/widgets/share/tool?canonicalUrl=${encodeURIComponent(pageUrl)}&title=${encodeURIComponent(pageTitle)}&caption=${encodeURIComponent(pageDescription)}`;
       break;
-    case 'truthSocial':
+    case 'shareTruthSocial':
       shareUrl = `https://truthsocial.com/share?text=${encodeURIComponent(text)}&url=${encodeURIComponent(pageUrl)}`;
       break;
-    case 'weibo':
+    case 'shareWeibo':
       shareUrl = `https://service.weibo.com/share/share.php?url=${encodeURIComponent(pageUrl)}&title=${encodeURIComponent(text)}`;
       break;
     case 'copyText':

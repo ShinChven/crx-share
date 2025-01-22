@@ -199,6 +199,11 @@ function updateOpenWithTargets(openWithTargets) {
 chrome.contextMenus.onClicked.addListener((info, tab) => {
   if (info.menuItemId === "sharePreferences" || info.menuItemId === "openWithPreferences") {
     chrome.tabs.create({ url: chrome.runtime.getURL("src/preferences.html") });
+  } else if (info.menuItemId === "copyText") {
+    chrome.scripting.executeScript({
+      target: { tabId: tab.id },
+      function: copySharingText
+    });
   } else if (info.menuItemId.startsWith("share") || info.menuItemId.startsWith("customTarget")) {
     chrome.scripting.executeScript({
       target: { tabId: tab.id },
@@ -255,6 +260,41 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
     }
   }
 });
+
+function copySharingText() {
+  const pageTitle = document.title;
+  const pageUrl = document.location.href;
+
+  // Function to retrieve content from meta tags by property name
+  function getMetaContentByName(name) {
+    const tag = document.querySelector(`meta[property='${name}'], meta[name='${name}']`);
+    return tag ? tag.content : null;
+  }
+
+  // Try to get the description from various meta tags
+  let pageDescription = getMetaContentByName('og:description') ||
+                        getMetaContentByName('description') ||
+                        getMetaContentByName('twitter:description');
+
+  // Create an array to hold the parts of the text
+  const textParts = [pageTitle];
+
+  // If description exists, add it to the array
+  if (pageDescription) {
+    textParts.push(pageDescription);
+  }
+
+  // Join the parts with a separator, but only if the description is available
+  const text = textParts.join(' - ');
+
+  const sharingText = `${text} ${pageUrl}`;
+
+  navigator.clipboard.writeText(sharingText).then(() => {
+    console.log('Text copied to clipboard');
+  }).catch(err => {
+    console.error('Could not copy text: ', err);
+  });
+}
 
 function getPageDetails(menuItemId) {
   const pageTitle = document.title;

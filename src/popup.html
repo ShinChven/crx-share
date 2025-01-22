@@ -1,13 +1,92 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="UTF-8">
   <title>Tweet Page Info</title>
 </head>
 <body>
   <div id="popup-content">
-    <p>Click the button to tweet this page.</p>
-    <button id="tweet-button">Tweet</button>
+    <h3>Share this page</h3>
+    <div class="share-buttons">
+      <button id="twitter-button" class="share-button">𝕏 (Twitter)</button>
+      <button id="facebook-button" class="share-button">Facebook</button>
+      <button id="reddit-button" class="share-button">Reddit</button>
+      <button id="linkedin-button" class="share-button">LinkedIn</button>
+      <button id="pinterest-button" class="share-button">Pinterest</button>
+      <button id="tumblr-button" class="share-button">Tumblr</button>
+      <button id="truthsocial-button" class="share-button">Truth Social</button>
+      <button id="weibo-button" class="share-button">Weibo</button>
+      <button id="copy-button" class="share-button">Copy Text</button>
+    </div>
   </div>
+  <style>
+    .share-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      width: 200px;
+    }
+    .share-button {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      width: 100%;
+      text-align: left;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      background: white;
+      cursor: pointer;
+    }
+    #twitter-button {
+      background: #000;
+      color: white;
+    }
+    #facebook-button {
+      background: #1877f2;
+      color: white;
+    }
+    #reddit-button {
+      background: #ff4500;
+      color: white;
+    }
+    #linkedin-button {
+      background: #0a66c2;
+      color: white;
+    }
+    #pinterest-button {
+      background: #e60023;
+      color: white;
+    }
+    #tumblr-button {
+      background: #001935;
+      color: white;
+    }
+    #truthsocial-button {
+      background: #1c1c1c;
+      color: white;
+    }
+    #weibo-button {
+      background: #e6162d;
+      color: white;
+    }
+    #copy-button {
+      background: #4caf50;
+      color: white;
+    }
+    .share-button:hover {
+      filter: brightness(0.9);
+    }
+    .share-button img {
+      width: 16px;
+      height: 16px;
+    }
+    h3 {
+      margin: 0 0 12px 0;
+      font-size: 14px;
+      color: #333;
+    }
+  </style>
   <script src="popup.js"></script>
 </body>
 </html>

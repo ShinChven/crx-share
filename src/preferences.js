@@ -62,6 +62,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 editButton.textContent = 'Edit';
                 editButton.addEventListener('click', () => editTarget(target));
                 actionsCell.appendChild(editButton);
+
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = 'Delete';
+                deleteButton.addEventListener('click', () => {
+                    if (confirm('Are you sure you want to delete this target?')) {
+                        deleteTarget(target.id);
+                    }
+                });
+                actionsCell.appendChild(deleteButton);
             });
         });
     }
@@ -72,6 +81,16 @@ document.addEventListener('DOMContentLoaded', () => {
         form.buttonColor.value = target.buttonColor;
         form.textColor.value = target.textColor;
         editingTargetId = target.id;
+    }
+
+    function deleteTarget(id) {
+        chrome.storage.local.get({ customTargets: [] }, (result) => {
+            const customTargets = result.customTargets.filter(t => t.id !== id);
+            chrome.storage.local.set({ customTargets }, () => {
+                console.log('Target deleted');
+                updateTable();
+            });
+        });
     }
 
     updateTable();

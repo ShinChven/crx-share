@@ -9,21 +9,51 @@ chrome.runtime.onInstalled.addListener(function() {
   // Define the targets as an array of objects
   const targets = [
     {
-      id: "shareTwitter",
+      id: "twitter",
       parentId: "sharePage",
-      title: "Share on Twitter",
+      title: "𝕏 (formerly Twitter)",
       contexts: ["page"]
     },
     {
-      id: "shareFacebook",
+      id: "facebook",
       parentId: "sharePage",
-      title: "Share on Facebook",
+      title: "Facebook",
       contexts: ["page"]
     },
     {
-      id: "shareReddit",
+      id: "reddit",
       parentId: "sharePage",
-      title: "Share on Reddit",
+      title: "Reddit",
+      contexts: ["page"]
+    },
+    {
+      id: "linkedin",
+      parentId: "sharePage",
+      title: "LinkedIn",
+      contexts: ["page"]
+    },
+    {
+      id: "pinterest",
+      parentId: "sharePage",
+      title: "Pinterest",
+      contexts: ["page"]
+    },
+    {
+      id: "tumblr",
+      parentId: "sharePage",
+      title: "Tumblr",
+      contexts: ["page"]
+    },
+    {
+      id: "truthSocial",
+      parentId: "sharePage",
+      title: "Truth Social",
+      contexts: ["page"]
+    },
+    {
+      id: "weibo",
+      parentId: "sharePage",
+      title: "Weibo",
       contexts: ["page"]
     }
   ];
@@ -54,7 +84,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 
 function getPageDetails(menuItemId) {
   const pageTitle = document.title;
-  
+
   // Function to retrieve content from meta tags by property name
   function getMetaContentByName(name) {
     const tag = document.querySelector(`meta[property='${name}'], meta[name='${name}']`);
@@ -81,14 +111,29 @@ function getPageDetails(menuItemId) {
   let shareUrl = '';
 
   switch (menuItemId) {
-    case 'shareTwitter':
-      shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(pageUrl)}`;
+    case 'twitter':
+      shareUrl = `https://x.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(pageUrl)}`;
       break;
-    case 'shareFacebook':
+    case 'facebook':
       shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(pageUrl)}`;
       break;
-    case 'shareReddit':
+    case 'reddit':
       shareUrl = `https://www.reddit.com/submit?url=${encodeURIComponent(pageUrl)}&title=${encodeURIComponent(text)}`;
+      break;
+    case 'linkedin':
+      shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(pageUrl)}`;
+      break;
+    case 'pinterest':
+      shareUrl = `https://pinterest.com/pin/create/button/?url=${encodeURIComponent(pageUrl)}&description=${encodeURIComponent(text)}`;
+      break;
+    case 'tumblr':
+      shareUrl = `https://www.tumblr.com/widgets/share/tool?canonicalUrl=${encodeURIComponent(pageUrl)}&title=${encodeURIComponent(pageTitle)}&caption=${encodeURIComponent(pageDescription)}`;
+      break;
+    case 'truthSocial':
+      shareUrl = `https://truthsocial.com/share?text=${encodeURIComponent(text)}&url=${encodeURIComponent(pageUrl)}`;
+      break;
+    case 'weibo':
+      shareUrl = `https://service.weibo.com/share/share.php?url=${encodeURIComponent(pageUrl)}&title=${encodeURIComponent(text)}`;
       break;
     case 'copyText':
       navigator.clipboard.writeText(`${text} ${pageUrl}`).then(() => {

@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "Share Feed",
-  "version": "1.0",
+  "name": "Xrs Share",
+  "version": "1.1",
   "permissions": ["activeTab", "scripting", "contextMenus", "clipboardWrite"],
   "background": {
     "service_worker": "background.js"

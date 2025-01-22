@@ -89,14 +89,6 @@ function createContextMenu() {
     contexts: ["page"]
   });
 
-  // Add "Preferences" option to "Share This Page" menu at the bottom
-  chrome.contextMenus.create({
-    id: "sharePreferences",
-    parentId: "sharePage",
-    title: "Preferences",
-    contexts: ["page"]
-  });
-
   // Create a parent item for "Open Selected Text With"
   chrome.contextMenus.create({
     id: "openSelectedTextWith",
@@ -130,14 +122,6 @@ function createContextMenu() {
   openTargets.forEach(target => {
     chrome.contextMenus.create(target);
   });
-
-  // Add "Preferences" option to "Open Selected Text With" menu at the bottom
-  chrome.contextMenus.create({
-    id: "openWithPreferences",
-    parentId: "openSelectedTextWith",
-    title: "Preferences",
-    contexts: ["selection"]
-  });
 }
 
 function loadCustomTargets() {
@@ -150,6 +134,14 @@ function loadCustomTargets() {
         title: target.title,
         contexts: ["page"]
       });
+    });
+
+    // Add "Preferences" option to "Share This Page" menu at the bottom
+    chrome.contextMenus.create({
+      id: "sharePreferences",
+      parentId: "sharePage",
+      title: "Preferences",
+      contexts: ["page"]
     });
   });
 }
@@ -165,6 +157,14 @@ function loadOpenWithTargets() {
         contexts: ["selection"]
       });
     });
+
+    // Add "Preferences" option to "Open Selected Text With" menu at the bottom
+    chrome.contextMenus.create({
+      id: "openWithPreferences",
+      parentId: "openSelectedTextWith",
+      title: "Preferences",
+      contexts: ["selection"]
+    });
   });
 }
 
@@ -179,6 +179,14 @@ function updateCustomTargets(customTargets) {
         contexts: ["page"]
       });
     });
+
+    // Add "Preferences" option to "Share This Page" menu at the bottom
+    chrome.contextMenus.create({
+      id: "sharePreferences",
+      parentId: "sharePage",
+      title: "Preferences",
+      contexts: ["page"]
+    });
   });
 }
 
@@ -192,6 +200,14 @@ function updateOpenWithTargets(openWithTargets) {
         title: target.title,
         contexts: ["selection"]
       });
+    });
+
+    // Add "Preferences" option to "Open Selected Text With" menu at the bottom
+    chrome.contextMenus.create({
+      id: "openWithPreferences",
+      parentId: "openSelectedTextWith",
+      title: "Preferences",
+      contexts: ["selection"]
     });
   });
 }

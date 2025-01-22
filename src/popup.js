@@ -13,17 +13,36 @@ const shareButtons = [
 
 shareButtons.forEach(button => {
   document.getElementById(button.id).addEventListener('click', () => {
-    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-      chrome.scripting.executeScript({
-        target: { tabId: tabs[0].id },
-        function: getPageDetails,
-        args: [button.platform]
+    if (button.platform === 'copyText') {
+      chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+        chrome.scripting.executeScript({
+          target: { tabId: tabs[0].id },
+          function: getPageDetails,
+          args: [button.platform]
+        }, (results) => {
+          const { result } = results[0];
+          const clipboardContent = `${result.title}\n${result.description}\n${result.url}`;
+          navigator.clipboard.writeText(clipboardContent).then(() => {
+            console.log('Page details copied to clipboard!');
+            alert('Page details copied to clipboard!');
+          }, (err) => {
+            console.error('Could not copy text: ', err);
+          });
+        });
       });
-    });
+    } else {
+      chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+        chrome.scripting.executeScript({
+          target: { tabId: tabs[0].id },
+          function: getPageDetails,
+          args: [button.platform]
+        });
+      });
+    }
   });
 });
 
-function getPageDetails(menuItemId) {
+function getPageDetails(menuItemId, template) {
   const pageTitle = document.title;
 
   // Function to retrieve content from meta tags by property name
@@ -49,6 +68,11 @@ function getPageDetails(menuItemId) {
   const text = textParts.join(' - ');
 
   const pageUrl = document.location.href;
+
+  if (menuItemId === 'copyText' || menuItemId === 'customTarget') {
+    return { title: pageTitle, description: pageDescription, url: pageUrl };
+  }
+
   let shareUrl = '';
 
   switch (menuItemId) {
@@ -76,13 +100,6 @@ function getPageDetails(menuItemId) {
     case 'shareWeibo':
       shareUrl = `https://service.weibo.com/share/share.php?url=${encodeURIComponent(pageUrl)}&title=${encodeURIComponent(text)}`;
       break;
-    case 'copyText':
-      navigator.clipboard.writeText(`${text} ${pageUrl}`).then(() => {
-        alert('Sharing text copied to clipboard!');
-      }, (err) => {
-        console.error('Could not copy text: ', err);
-      });
-      return; // Exit the function after copying to clipboard
   }
 
   if (shareUrl) {
@@ -102,16 +119,26 @@ document.addEventListener('DOMContentLoaded', () => {
         chrome.storage.local.get({ customTargets: [] }, (result) => {
             const customTargets = result.customTargets;
             console.log('Custom targets:', customTargets);
-            const container = document.getElementById('customTargetsContainer');
+            const container = document.querySelector('.share-buttons');
             customTargets.forEach(target => {
                 const button = document.createElement('button');
                 button.textContent = target.title;
                 button.style.backgroundColor = target.buttonColor;
                 button.style.color = target.textColor;
+                button.classList.add('share-button');
                 button.addEventListener('click', () => {
-                    const url = target.template.replace('{url}', encodeURIComponent(window.location.href))
-                                              .replace('{text}', encodeURIComponent(document.title));
-                    window.open(url, '_blank');
+                    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+                        chrome.scripting.executeScript({
+                            target: { tabId: tabs[0].id },
+                            function: getPageDetails,
+                            args: ['customTarget', target.template]
+                        }, (results) => {
+                            const { result } = results[0];
+                            const url = target.template.replace('{url}', encodeURIComponent(result.url))
+                                                      .replace('{text}', encodeURIComponent(result.description));
+                            window.open(url, '_blank');
+                        });
+                    });
                 });
                 container.appendChild(button);
             });

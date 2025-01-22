@@ -6,7 +6,10 @@
 </head>
 <body>
   <div id="popup-content">
-    <h3>Share this page</h3>
+    <div class="header">
+      <h3>Share this page</h3>
+      <button id="openPreferences" class="emoji-button">⚙️</button>
+    </div>
     <div class="share-buttons">
       <button id="twitter-button" class="share-button">𝕏 (Twitter)</button>
       <button id="facebook-button" class="share-button">Facebook</button>
@@ -17,11 +20,20 @@
       <button id="truthsocial-button" class="share-button">Truth Social</button>
       <button id="weibo-button" class="share-button">Weibo</button>
       <button id="copy-button" class="share-button">Copy Text</button>
-      <button id="openPreferences" class="share-button">Preferences</button>
     </div>
-    <div id="customTargetsContainer"></div>
   </div>
   <style>
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .emoji-button {
+      background: none;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+    }
     .share-buttons {
       display: flex;
       flex-direction: column;
@@ -80,7 +92,7 @@
       filter: brightness(0.9);
     }
     h3 {
-      margin: 0 0 12px 0;
+      margin: 0;
       font-size: 14px;
       color: #333;
     }

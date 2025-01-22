@@ -70,14 +70,45 @@ chrome.runtime.onInstalled.addListener(function() {
     title: "Copy Sharing Text",
     contexts: ["page"]
   });
+
+  // Load custom targets from storage
+  chrome.storage.local.get({ customTargets: [] }, (result) => {
+    const customTargets = result.customTargets;
+    customTargets.forEach(target => {
+      chrome.contextMenus.create({
+        id: `customTarget-${target.id}`,
+        parentId: "sharePage",
+        title: target.title,
+        contexts: ["page"]
+      });
+    });
+  });
 });
 
 chrome.contextMenus.onClicked.addListener((info, tab) => {
-  if (info.menuItemId.startsWith("share")) {
+  if (info.menuItemId.startsWith("share") || info.menuItemId.startsWith("customTarget")) {
     chrome.scripting.executeScript({
       target: { tabId: tab.id },
       function: getPageDetails,
       args: [info.menuItemId]
+    }, (results) => {
+      if (info.menuItemId.startsWith("customTarget")) {
+        chrome.storage.local.get({ customTargets: [] }, (result) => {
+          const customTarget = result.customTargets.find(target => `customTarget-${target.id}` === info.menuItemId);
+          if (customTarget) {
+            const { title, description, url } = results[0].result;
+            const shareUrl = customTarget.template.replace('{url}', encodeURIComponent(url))
+                                                  .replace('{text}', encodeURIComponent(description));
+            chrome.tabs.create({ url: shareUrl });
+          }
+        });
+      } else {
+        const { result } = results[0];
+        const shareUrl = getShareUrl(info.menuItemId, result.title, result.description, result.url);
+        if (shareUrl) {
+          chrome.tabs.create({ url: shareUrl });
+        }
+      }
     });
   }
 });
@@ -108,43 +139,40 @@ function getPageDetails(menuItemId) {
   const text = textParts.join(' - ');
 
   const pageUrl = document.location.href;
+
+  return { title: pageTitle, description: pageDescription, url: pageUrl };
+}
+
+function getShareUrl(menuItemId, title, description, url) {
+  const text = `${title} - ${description}`;
   let shareUrl = '';
 
   switch (menuItemId) {
     case 'shareTwitter':
-      shareUrl = `https://x.com/intent/post?text=${encodeURIComponent(text)}&url=${encodeURIComponent(pageUrl)}`;
+      shareUrl = `https://x.com/intent/post?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
       break;
     case 'shareFacebook':
-      shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(pageUrl)}`;
+      shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
       break;
     case 'shareReddit':
-      shareUrl = `https://www.reddit.com/submit?url=${encodeURIComponent(pageUrl)}&title=${encodeURIComponent(text)}`;
+      shareUrl = `https://www.reddit.com/submit?url=${encodeURIComponent(url)}&title=${encodeURIComponent(text)}`;
       break;
     case 'shareLinkedin':
-      shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(pageUrl)}`;
+      shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
       break;
     case 'sharePinterest':
-      shareUrl = `https://pinterest.com/pin/create/button/?url=${encodeURIComponent(pageUrl)}&description=${encodeURIComponent(text)}`;
+      shareUrl = `https://pinterest.com/pin/create/button/?url=${encodeURIComponent(url)}&description=${encodeURIComponent(text)}`;
       break;
     case 'shareTumblr':
-      shareUrl = `https://www.tumblr.com/widgets/share/tool?canonicalUrl=${encodeURIComponent(pageUrl)}&title=${encodeURIComponent(pageTitle)}&caption=${encodeURIComponent(pageDescription)}`;
+      shareUrl = `https://www.tumblr.com/widgets/share/tool?canonicalUrl=${encodeURIComponent(url)}&title=${encodeURIComponent(title)}&caption=${encodeURIComponent(description)}`;
       break;
     case 'shareTruthSocial':
-      shareUrl = `https://truthsocial.com/share?text=${encodeURIComponent(text)}&url=${encodeURIComponent(pageUrl)}`;
+      shareUrl = `https://truthsocial.com/share?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
       break;
     case 'shareWeibo':
-      shareUrl = `https://service.weibo.com/share/share.php?url=${encodeURIComponent(pageUrl)}&title=${encodeURIComponent(text)}`;
+      shareUrl = `https://service.weibo.com/share/share.php?url=${encodeURIComponent(url)}&title=${encodeURIComponent(text)}`;
       break;
-    case 'copyText':
-      navigator.clipboard.writeText(`${text} ${pageUrl}`).then(() => {
-        alert('Sharing text copied to clipboard!');
-      }, (err) => {
-        console.error('Could not copy text: ', err);
-      });
-      return; // Exit the function after copying to clipboard
   }
 
-  if (shareUrl) {
-    window.open(shareUrl, '_blank');
-  }
+  return shareUrl;
 }

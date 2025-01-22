@@ -53,24 +53,32 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log('Loaded custom targets:', customTargets);
             customTargets.forEach(target => {
                 const row = targetsTable.insertRow();
-                row.insertCell(0).textContent = target.title;
-                row.insertCell(1).textContent = target.template;
-                row.insertCell(2).textContent = target.buttonColor;
-                row.insertCell(3).textContent = target.textColor;
-                const actionsCell = row.insertCell(4);
-                const editButton = document.createElement('button');
-                editButton.textContent = 'Edit';
-                editButton.addEventListener('click', () => editTarget(target));
-                actionsCell.appendChild(editButton);
+                const titleCell = row.insertCell(0);
+                titleCell.textContent = target.title;
+                titleCell.style.backgroundColor = target.buttonColor;
+                titleCell.style.color = target.textColor;
 
-                const deleteButton = document.createElement('button');
-                deleteButton.textContent = 'Delete';
-                deleteButton.addEventListener('click', () => {
+                row.insertCell(1).textContent = target.template;
+
+                const actionsCell = row.insertCell(2);
+
+                const editLink = document.createElement('a');
+                editLink.textContent = 'Edit';
+                editLink.href = '#';
+                editLink.className = 'action-link edit-link';
+                editLink.addEventListener('click', () => editTarget(target));
+                actionsCell.appendChild(editLink);
+
+                const deleteLink = document.createElement('a');
+                deleteLink.textContent = 'Delete';
+                deleteLink.href = '#';
+                deleteLink.className = 'action-link delete-link';
+                deleteLink.addEventListener('click', () => {
                     if (confirm('Are you sure you want to delete this target?')) {
                         deleteTarget(target.id);
                     }
                 });
-                actionsCell.appendChild(deleteButton);
+                actionsCell.appendChild(deleteLink);
             });
         });
     }

@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "Xrs Share",
-  "version": "1.2.0",
+  "name": "CRX Share",
+  "version": "1.3.0",
   "description": "Share page details to various platforms.",
   "permissions": [
     "storage",

@@ -3,7 +3,7 @@
 
 <head>
 	<meta charset="UTF-8">
-	<title>Preferences</title>
+	<title>Preferences - CRX Share</title>
 	<style>
 		/* Add your styles here */
 		body {
@@ -111,18 +111,26 @@
 		a.delete-link:hover {
 			color: #c82333;
 		}
+
+		.flex-row {
+			display: flex;
+			flex-direction: row;
+			gap: 10px;
+		}
 	</style>
 </head>
 
 <body>
 	<div class="container">
-		<h1>Custom Share Targets</h1>
+		<h1>CRX Share Preferences</h1>
+		<h1>Share Page to ...</h1>
+		<p>Use this form to create or edit targets for sharing pages. Fill in the title, template URL, button color, and text color, then click "Save".</p>
 		<form id="targetForm">
 			<label for="title">Title:</label>
 			<input type="text" id="title" name="title" required><br><br>
 			<label for="template">Template:</label>
 			<input type="text" id="template" name="template"
-				placeholder="e.g., https://example.com/share?url={url}&text={text}" required><br><br>
+				placeholder="e.g., https://x.com/intent/post?text={text}&url={url}" required><br><br>
 			<label for="buttonColor">Button Color:</label>
 			<input type="color" id="buttonColor" name="buttonColor" required><br><br>
 			<label for="textColor">Text Color:</label>
@@ -130,6 +138,7 @@
 			<button type="submit">Save</button>
 		</form>
 		<h2>Saved Targets</h2>
+		<p>Below is a list of your saved targets. You can edit or delete them using the actions provided.</p>
 		<table id="targetsTable">
 			<thead>
 				<tr>
@@ -143,19 +152,48 @@
 				<!-- Example row -->
 				<tr>
 					<td style="background-color: #007bff; color: #ffffff;">Example Title</td>
-					<td>https://example.com/share?url={url}&text={text}</td>
+					<td>https://x.com/intent/post?text={text}&url={url}</td>
 					<td>
-						<div style="display: flex; flex-direction: row; gap: 10px;">
+							<div class="flex-row">
 							<a href="#" class="action-link edit-link">Edit</a>
 							<a href="#" class="action-link delete-link">Delete</a>
 						</div>
-
 					</td>
 				</tr>
 			</tbody>
 		</table>
 	</div>
+	<div class="container">
+		<h1>Open Selected Text with ...</h1>
+		<p>Use this form to create or edit targets for opening selected text. Fill in the title and URL template, then click "Save".</p>
+		<form id="openWithForm">
+			<label for="title">Title:</label>
+			<input type="text" id="title" name="title" required><br><br>
+			<label for="urlTemplate">URL Template:</label>
+			<input type="text" id="urlTemplate" name="urlTemplate"
+				placeholder="e.g., https://www.google.com/search?q={text}" required><br><br>
+			<button type="submit">Save</button>
+		</form>
+		<h2>Saved Open With Targets</h2>
+		<p>Below is a list of your saved "Open With" targets. You can edit or delete them using the actions provided.</p>
+		<table id="openWithTable">
+			<thead>
+				<tr>
+					<th>Title</th>
+					<th>URL Template</th>
+					<th>Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				<!-- Open With targets will be populated here -->
+			</tbody>
+		</table>
+	</div>
 	<script src="preferences.js"></script>
+	<div class="container">
+		<p>Author: ShinChven</p>
+		<p>Email: <a href="mailto:shinchven@gmail.com">shinchven@gmail.com</a></p>
+	</div>
 </body>
 
 </html>

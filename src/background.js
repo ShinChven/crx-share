@@ -82,11 +82,76 @@ chrome.runtime.onInstalled.addListener(function() {
         contexts: ["page"]
       });
     });
+
+    // Add "Preferences" option to "Share This Page" menu at the bottom
+    chrome.contextMenus.create({
+      id: "sharePreferences",
+      parentId: "sharePage",
+      title: "Preferences",
+      contexts: ["page"]
+    });
+  });
+
+  // Create a parent item for "Open Selected Text With"
+  chrome.contextMenus.create({
+    id: "openSelectedTextWith",
+    title: "Open Selected Text With",
+    contexts: ["selection"]
+  });
+
+  // Define the targets for "Open Selected Text With"
+  const openTargets = [
+    {
+      id: "openGoogle",
+      parentId: "openSelectedTextWith",
+      title: "Google",
+      contexts: ["selection"]
+    },
+    {
+      id: "openBing",
+      parentId: "openSelectedTextWith",
+      title: "Bing",
+      contexts: ["selection"]
+    },
+    {
+      id: "openDuckDuckGo",
+      parentId: "openSelectedTextWith",
+      title: "DuckDuckGo",
+      contexts: ["selection"]
+    }
+  ];
+
+  // Create context menus using the openTargets array
+  openTargets.forEach(target => {
+    chrome.contextMenus.create(target);
+  });
+
+  // Load custom "Open With" targets from storage
+  chrome.storage.local.get({ openWithTargets: [] }, (result) => {
+    const openWithTargets = result.openWithTargets;
+    openWithTargets.forEach(target => {
+      chrome.contextMenus.create({
+        id: `openWithTarget-${target.id}`,
+        parentId: "openSelectedTextWith",
+        title: target.title,
+        contexts: ["selection"]
+      });
+    });
+
+    // Add "Preferences" option to "Open Selected Text With" menu at the bottom
+    chrome.contextMenus.create({
+      id: "openWithPreferences",
+      parentId: "openSelectedTextWith",
+      title: "Preferences",
+      contexts: ["selection"]
+    });
   });
 });
 
 chrome.contextMenus.onClicked.addListener((info, tab) => {
-  if (info.menuItemId.startsWith("share") || info.menuItemId.startsWith("customTarget")) {
+  if (info.menuItemId === "sharePreferences" || info.menuItemId === "openWithPreferences") {
+    chrome.tabs.create({ url: chrome.runtime.getURL("src/preferences.html") });
+  } else if (info.menuItemId.startsWith("share") || info.menuItemId.startsWith("customTarget")) {
     chrome.scripting.executeScript({
       target: { tabId: tab.id },
       function: getPageDetails,
@@ -110,6 +175,36 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
         }
       }
     });
+  } else if (info.menuItemId.startsWith("open")) {
+    const selectedText = info.selectionText;
+    let searchUrl = '';
+
+    switch (info.menuItemId) {
+      case 'openGoogle':
+        searchUrl = `https://www.google.com/search?q=${encodeURIComponent(selectedText)}`;
+        break;
+      case 'openBing':
+        searchUrl = `https://www.bing.com/search?q=${encodeURIComponent(selectedText)}`;
+        break;
+      case 'openDuckDuckGo':
+        searchUrl = `https://duckduckgo.com/?q=${encodeURIComponent(selectedText)}`;
+        break;
+      default:
+        if (info.menuItemId.startsWith("openWithTarget")) {
+          chrome.storage.local.get({ openWithTargets: [] }, (result) => {
+            const openWithTarget = result.openWithTargets.find(target => `openWithTarget-${target.id}` === info.menuItemId);
+            if (openWithTarget) {
+              searchUrl = openWithTarget.urlTemplate.replace('{text}', encodeURIComponent(selectedText));
+              chrome.tabs.create({ url: searchUrl });
+            }
+          });
+        }
+        break;
+    }
+
+    if (searchUrl && !info.menuItemId.startsWith("openWithTarget")) {
+      chrome.tabs.create({ url: searchUrl });
+    }
   }
 });
 

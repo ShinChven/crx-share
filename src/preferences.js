@@ -61,13 +61,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 row.insertCell(1).textContent = target.template;
 
                 const actionsCell = row.insertCell(2);
+                const actionsContainer = document.createElement('div');
+                actionsContainer.className = 'flex-row';
 
                 const editLink = document.createElement('a');
                 editLink.textContent = 'Edit';
                 editLink.href = '#';
                 editLink.className = 'action-link edit-link';
                 editLink.addEventListener('click', () => editTarget(target));
-                actionsCell.appendChild(editLink);
+                actionsContainer.appendChild(editLink);
 
                 const deleteLink = document.createElement('a');
                 deleteLink.textContent = 'Delete';
@@ -78,7 +80,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         deleteTarget(target.id);
                     }
                 });
-                actionsCell.appendChild(deleteLink);
+                actionsContainer.appendChild(deleteLink);
+
+                actionsCell.appendChild(actionsContainer);
             });
         });
     }
@@ -102,4 +106,98 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     updateTable();
+
+    const openWithForm = document.getElementById('openWithForm');
+    const openWithTable = document.getElementById('openWithTable').getElementsByTagName('tbody')[0];
+    let editingOpenWithId = null;
+
+    openWithForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        console.log('Open With Form submitted');
+        const title = openWithForm.title.value;
+        const urlTemplate = openWithForm.urlTemplate.value;
+
+        const newOpenWithTarget = {
+            id: editingOpenWithId || generateId(),
+            title,
+            urlTemplate
+        };
+
+        console.log('New Open With target:', newOpenWithTarget);
+        saveOpenWithTarget(newOpenWithTarget, updateOpenWithTable);
+        openWithForm.reset();
+        editingOpenWithId = null;
+    });
+
+    function saveOpenWithTarget(target, callback) {
+        chrome.storage.local.get({ openWithTargets: [] }, (result) => {
+            let openWithTargets = result.openWithTargets;
+            const targetIndex = openWithTargets.findIndex(t => t.id === target.id);
+            if (targetIndex > -1) {
+                openWithTargets[targetIndex] = target; // Override existing target
+            } else {
+                openWithTargets.push(target); // Add new target
+            }
+            chrome.storage.local.set({ openWithTargets }, () => {
+                console.log('Open With target saved');
+                if (callback) callback();
+            });
+        });
+    }
+
+    function updateOpenWithTable() {
+        console.log('Updating Open With table');
+        openWithTable.innerHTML = '';
+        chrome.storage.local.get({ openWithTargets: [] }, (result) => {
+            const openWithTargets = result.openWithTargets;
+            console.log('Loaded Open With targets:', openWithTargets);
+            openWithTargets.forEach(target => {
+                const row = openWithTable.insertRow();
+                row.insertCell(0).textContent = target.title;
+                row.insertCell(1).textContent = target.urlTemplate;
+
+                const actionsCell = row.insertCell(2);
+                const actionsContainer = document.createElement('div');
+                actionsContainer.className = 'flex-row';
+
+                const editLink = document.createElement('a');
+                editLink.textContent = 'Edit';
+                editLink.href = '#';
+                editLink.className = 'action-link edit-link';
+                editLink.addEventListener('click', () => editOpenWithTarget(target));
+                actionsContainer.appendChild(editLink);
+
+                const deleteLink = document.createElement('a');
+                deleteLink.textContent = 'Delete';
+                deleteLink.href = '#';
+                deleteLink.className = 'action-link delete-link';
+                deleteLink.addEventListener('click', () => {
+                    if (confirm('Are you sure you want to delete this target?')) {
+                        deleteOpenWithTarget(target.id);
+                    }
+                });
+                actionsContainer.appendChild(deleteLink);
+
+                actionsCell.appendChild(actionsContainer);
+            });
+        });
+    }
+
+    function editOpenWithTarget(target) {
+        openWithForm.title.value = target.title;
+        openWithForm.urlTemplate.value = target.urlTemplate;
+        editingOpenWithId = target.id;
+    }
+
+    function deleteOpenWithTarget(id) {
+        chrome.storage.local.get({ openWithTargets: [] }, (result) => {
+            const openWithTargets = result.openWithTargets.filter(t => t.id !== id);
+            chrome.storage.local.set({ openWithTargets }, () => {
+                console.log('Open With target deleted');
+                updateOpenWithTable();
+            });
+        });
+    }
+
+    updateOpenWithTable();
 });

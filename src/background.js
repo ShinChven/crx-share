@@ -112,7 +112,7 @@ function getPageDetails(menuItemId) {
 
   switch (menuItemId) {
     case 'shareTwitter':
-      shareUrl = `https://x.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(pageUrl)}`;
+      shareUrl = `https://x.com/intent/post?text=${encodeURIComponent(text)}&url=${encodeURIComponent(pageUrl)}`;
       break;
     case 'shareFacebook':
       shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(pageUrl)}`;
